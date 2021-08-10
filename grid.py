@@ -22,6 +22,70 @@ class Grid:
 
     def update_model(self):
         self.model = [[self.cubes[i][j].value for j in range(self.cols)] for i in range(self.rows)]
+  
+    def place(self, value):
+        row, col = self.selected
+        if self.cubes[row][col].value == 0:
+            self.cubes[row][col].set(value)
+            self.update_model()
+
+            if is_valid(self.model, value, row, col) and self.solve():
+                print("here")
+                return True
+            else:
+                self.cubes[row][col].set(0)
+                self.cubes[row][col].set_temp(0)
+                self.update_model()
+                return False
+
+    def sketch(self, value):
+        row, col = self.selected
+        self.cubes[row][col].set_temp(value)
+
+    def draw(self):
+        # draw grid lines
+        gap = self.width / 9
+        for i in range(self.rows+1):
+            if i % 3 == 0 and i != 0:
+                thick = 4
+            else:
+                thick = 1
+            pygame.draw.line(self.window, (0, 0, 0), (0, i*gap), (self.width, i*gap), thick) 
+            pygame.draw.line(self.window, (0, 0, 0), (i*gap, 0), (i*gap, self.height), thick) 
+
+        # draw cubes
+        for i in range(self.rows):
+            for j in range(self.cols):
+                self.cubes[i][j].draw(self.window)
+
+    def select(self, row, col):
+        for i in range(self.rows):
+            for j in range (self.cols):
+                self.cubes[i][j].selected = False
+
+        self.cubes[row][col].selected = True
+        self.selected = (row, col)
+
+    def clear(self):
+        row, col = self.selected
+        if self.cubes[row][col].value == 0:
+            self.cubes[row][col].set_temp(0)
+
+    def click(self, position):
+        if position[0] < self.width and position[1] < self.height:
+            gap = self.width / 9
+            x = position[0] // gap
+            y = position[1] // gap
+            return (int(y),int(x))
+        else:
+            return None
+
+    def is_finished(self):
+        for i in range(self.rows):
+            for j in range(self.cols):
+                if self.cubes[i][j].value == 0:
+                    return False
+        return True
 
     def solve(self):
         find = find_zero(self.model)
