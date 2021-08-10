@@ -1,5 +1,4 @@
 # solver.py
-
 def find_zero(board):
     board_row = 0
     for row in board:
