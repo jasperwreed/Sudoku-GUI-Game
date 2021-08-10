@@ -13,3 +13,9 @@ class Cube:
         self.width = width
         self.height = height
         self.selected = False
+
+    def set(self, value):
+        self.value = value
+
+    def set_temp(self, value):
+        self.temp = value
